@@ -126,7 +126,8 @@ class Bank(nn.Module):
         for name, index, shape in (("propagation", self.adjacency, (nodes, nodes)),
                                    ("reading", self.forecast_adjacency, (steps_out, nodes))):
             self.register_buffer(name, torch.sparse_coo_tensor(
-                index, torch.ones(index.shape[1]), shape).coalesce(), persistent=False)
+                index, torch.ones(index.shape[1]), shape, check_invariants=True).coalesce(),
+                persistent=False)
         axis = torch.arange(self.length)
         degree = ((self.lag[..., None] <= axis) & self.mask[..., None]).sum(1)
         self.register_buffer("degree", degree.clamp_min(1).to(torch.float32), persistent=False)
